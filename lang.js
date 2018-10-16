@@ -18,7 +18,8 @@ function displayStrings() {
     .catch(err => console.log(err));
 }
 
-function addString(string) {
+function addString() {
+  console.log(document.getElementById("new_string").value)
   db.collection("strings")
     .insertOne({content: document.getElementById("new_string").value})
     .catch(err => console.error(err));
