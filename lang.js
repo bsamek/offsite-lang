@@ -39,8 +39,8 @@ function getWordToSave() {
   word = {
     'from': t,
     'to': trinput.value,
-    'from_lang': 'english',
-    'to_lang': 'german'
+    'from_lang': 'en',
+    'to_lang': 'de'
   }
   addWord(word)
 }
