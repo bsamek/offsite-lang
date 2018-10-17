@@ -8,7 +8,7 @@ function displayOnLoad() {
     .catch(console.error);
 }
 
-function splitString(str){
+function splitString(str, uniqueWords){
   console.log("splitter", str)
   p = jQuery("<p></p>")
   words = str.split(' ')
@@ -17,61 +17,58 @@ function splitString(str){
     regex            = /[\!\@\#\$\%\^\&\*\(\)_\+\\\-\=\{\}\|\[\]\:"\;'\<\>\?\,\.\/「」„“]/g;
     clean_word       = word.replace(regex, '')
     word_translation = "tbd"
+
+    for (var j = 0; j < uniqueWords.length; j++) {
+      if (uniqueWords[j] == word) {
+        word = "<u>" + word + "</u>";
+      }
+    }
+
     span             = `<span word='${clean_word}' translation='${word_translation}' onClick=addWord(this)>${word}</span>`
     console.log(span)
     p.append(span)
   }
+
+  console.log(p)
   return p
 }
 
 function displayStringEntry(doc){
-  cls   = "list-group-item list-group-item-action"
-  id    = doc._id
-  text  = doc.content
-  title = text.slice(0, 20)
-  //console.log(stitch.ObjectID);
-  text = doc.content;
-  textList = text.split(" ");
-  p     = splitString(text)
-  phtml = p.html()
-  //console.log(p)
+  console.log("before", doc)
 
-  var words = "";
-  var uniqueWords = {};
+
+  console.log("hello")
+
+  uniqueWords = {};
   db.collection('words')
-    .find({from: {$in: textList}})
+    .find({from: {$in: doc.content.split(" ")}})
     .asArray()
-    .then(docs => docs.forEach(doc => {
-      if (doc.to) {
-        uniqueWords[doc.from] = doc.to;
+    .then(res => {
+      for (var i = 0; i < res.length; i++){
+        var strdoc = res[i]
+        if (strdoc.to) {
+          uniqueWords[strdoc.from] = strdoc.to;
+        }
       }
-    }))
+    })
     .then(() => {
-      for (i = 0; i < textList.length; i++) {
-        words += "<span onClick=addWord(this)>";
-        //console.log(textList[i]);
-        //console.log(uniqueWords);
-        //console.log(uniqueWords[textList[i]]);
-        if (uniqueWords[textList[i]]) {
-          words += "<u>";
-        }
-        words += textList[i];
-        if (uniqueWords[textList[i]]) {
-          words += "</u>";
-        }
-        words += "</span> ";
-      }
+      cls   = "list-group-item list-group-item-action"
+      id    = doc._id
+      text  = doc.content
+      title = text.slice(0, 20)
+      textList = text.split(" ");
+
+      p     = splitString(text, uniqueWords)
+      phtml = p.html()
+
+      console.log("inside", doc)
+
   	  listentry  = `<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`
       rmbtn      = `<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}')"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`
       panelentry = `<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}${phtml}</div>`
 
       $("#list-tab").append(listentry)
       $("#nav-tabContent").append(panelentry)
-      $("list-" + id).append(p)
-
-      //console.log($("list-" + id))
-
-      panelentry = `<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}${words}</div>`;
 
     })
     .catch(err => console.log(err));
