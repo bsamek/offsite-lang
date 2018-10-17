@@ -8,27 +8,6 @@ function displayOnLoad() {
     .catch(console.error);
 }
 
-function displayStringEntry(doc){
-  cls   = "list-group-item list-group-item-action"
-  id    = doc._id
-  text  = doc.content
-  title = text.slice(0, 20)
-
-  p     = splitString(text)
-  phtml = p.html()
-  console.log(p)
-
-  listentry  = `<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`
-  rmbtn      = `<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}')"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`
-  panelentry = `<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}${phtml}</div>`
-
-  $("#list-tab").append(listentry)
-  $("#nav-tabContent").append(panelentry)
-  $("list-" + id).append(p)
-
-  console.log($("list-" + id))
-}
-
 function splitString(str){
   console.log("splitter", str)
   p = jQuery("<p></p>")
@@ -43,6 +22,59 @@ function splitString(str){
     p.append(span)
   }
   return p
+}
+
+function displayStringEntry(doc){
+  cls   = "list-group-item list-group-item-action"
+  id    = doc._id
+  text  = doc.content
+  title = text.slice(0, 20)
+  //console.log(stitch.ObjectID);
+  text = doc.content;
+  textList = text.split(" ");
+  p     = splitString(text)
+  phtml = p.html()
+  //console.log(p)
+
+  var words = "";
+  var uniqueWords = {};
+  db.collection('words')
+    .find({from: {$in: textList}})
+    .asArray()
+    .then(docs => docs.forEach(doc => {
+      if (doc.to) {
+        uniqueWords[doc.from] = doc.to;
+      }
+    }))
+    .then(() => {
+      for (i = 0; i < textList.length; i++) {
+        words += "<span onClick=addWord(this)>";
+        //console.log(textList[i]);
+        //console.log(uniqueWords);
+        //console.log(uniqueWords[textList[i]]);
+        if (uniqueWords[textList[i]]) {
+          words += "<u>";
+        }
+        words += textList[i];
+        if (uniqueWords[textList[i]]) {
+          words += "</u>";
+        }
+        words += "</span> ";
+      }
+  	  listentry  = `<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`
+      rmbtn      = `<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}')"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`
+      panelentry = `<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}${phtml}</div>`
+
+      $("#list-tab").append(listentry)
+      $("#nav-tabContent").append(panelentry)
+      $("list-" + id).append(p)
+
+      //console.log($("list-" + id))
+
+      panelentry = `<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}${words}</div>`;
+
+    })
+    .catch(err => console.log(err));
 }
 
 function displayStrings() {
