@@ -9,9 +9,9 @@ function displayOnLoad() {
 }
 
 function splitString(str, uniqueWords){
-  console.log("splitter", str)
   p = jQuery("<p></p>")
   words = str.split(' ')
+  console.log(uniqueWords)
   for (var i = 0; i < words.length; i++) {
     word             = words[i]
     regex            = /[\!\@\#\$\%\^\&\*\(\)_\+\\\-\=\{\}\|\[\]\:"\;'\<\>\?\,\.\/「」„“]/g;
@@ -27,7 +27,7 @@ function splitString(str, uniqueWords){
       }
     }
 
-    span = `<span word='${clean_word}' translation='${word_translation}' onClick=addWord(this)>${word}</span>`
+    span = `<span word='${clean_word}' translation='${word_translation}' onClick=addWord(this)>${word} </span>`
     console.log(span)
     p.append(span)
   }
@@ -37,10 +37,6 @@ function splitString(str, uniqueWords){
 }
 
 function displayStringEntry(doc){
-  console.log("before", doc)
-
-
-  console.log("hello")
 
   uniqueWords = {};
   db.collection('words')
@@ -63,8 +59,6 @@ function displayStringEntry(doc){
 
       p     = splitString(text, uniqueWords)
       phtml = p.html()
-
-      console.log("inside", doc)
 
   	  listentry  = `<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`
       rmbtn      = `<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}')"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`
