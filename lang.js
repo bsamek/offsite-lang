@@ -15,11 +15,23 @@ function createStringEntry(doc){
   console.log(stitch.ObjectID);
   text = doc.content;
   textList = text.split(" ");
-  console.log(text);
-  console.log(textList);
   var words = "";
+  var uniqueWords = {};
+  db.collection('words')
+    .find({from: {$in: textList}})
+    .asArray()
+    .then(docs => docs.forEach(doc => {
+      if (doc.to) {
+        uniqueWords[doc.from] = doc.to;
+      }
+    }))
+    .catch(err => console.log(err));
   for (i = 0; i < textList.length; i++) {
-    words += "<span onClick=addWord(this)>";
+    words += "<span onClick=addWord(this)";
+    if (uniqueWords[textList[i]]) {
+      words += "class=\"highlight\"";
+    }
+    words += ">";
     words += textList[i];
     words += "</span> ";
   }
