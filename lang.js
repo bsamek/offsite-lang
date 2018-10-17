@@ -25,24 +25,29 @@ function createStringEntry(doc){
         uniqueWords[doc.from] = doc.to;
       }
     }))
+    .then(() => {
+      for (i = 0; i < textList.length; i++) {
+        words += "<span onClick=addWord(this)";
+        console.log(textList[i]);
+        console.log(uniqueWords);
+        console.log(uniqueWords[textList[i]]);
+        if (uniqueWords[textList[i]]) {
+          words += "class=\"highlight\"";
+        }
+        words += ">";
+        words += textList[i];
+        words += "</span> ";
+      }
+      title = text.slice(0, 20);
+
+      listentry  = `<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`;
+      rmbtn      = `<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}');displayStrings()"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`;
+      panelentry = `<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}${words}</div>`;
+
+      $("#list-tab").append(listentry);
+      $("#nav-tabContent").append(panelentry);
+    })
     .catch(err => console.log(err));
-  for (i = 0; i < textList.length; i++) {
-    words += "<span onClick=addWord(this)";
-    if (uniqueWords[textList[i]]) {
-      words += "class=\"highlight\"";
-    }
-    words += ">";
-    words += textList[i];
-    words += "</span> ";
-  }
-  title = text.slice(0, 20);
-
-  listentry  = `<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`;
-  rmbtn      = `<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}');displayStrings()"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`;
-  panelentry = `<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}${words}</div>`;
-
-  $("#list-tab").append(listentry);
-  $("#nav-tabContent").append(panelentry);
 }
 
 function displayStrings() {
