@@ -16,15 +16,18 @@ function splitString(str, uniqueWords){
     word             = words[i]
     regex            = /[\!\@\#\$\%\^\&\*\(\)_\+\\\-\=\{\}\|\[\]\:"\;'\<\>\?\,\.\/「」„“]/g;
     clean_word       = word.replace(regex, '')
-    word_translation = "tbd"
+    word_translation = ""
 
     for (var j = 0; j < uniqueWords.length; j++) {
-      if (uniqueWords[j] == word) {
+      console.log(  uniqueWords[j])
+      if (uniqueWords[j].from == word) {
         word = "<u>" + word + "</u>";
+        word_translation = uniqueWords[j].to
+        break;
       }
     }
 
-    span             = `<span word='${clean_word}' translation='${word_translation}' onClick=addWord(this)>${word}</span>`
+    span = `<span word='${clean_word}' translation='${word_translation}' onClick=addWord(this)>${word}</span>`
     console.log(span)
     p.append(span)
   }
