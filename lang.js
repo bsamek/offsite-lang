@@ -16,10 +16,10 @@ function createStringEntry(doc){
   text = doc.content;
   textList = text.split(" ");
   console.log(text);
-  console.log(textList)
+  console.log(textList);
   var words = "";
   for (i = 0; i < textList.length; i++) {
-    words += "<span>";
+    words += "<span onClick=addWord(this)>";
     words += textList[i];
     words += "</span> ";
   }
@@ -59,8 +59,10 @@ function addString() {
 }
 
 function addWord(word) {
+  var from = word.textContent;
+  var definition = window.prompt("Enter definition for \"\"");
   db.collection("words")
-    .insertOne(word)
+    .insertOne({from: from, to: definition})
     .catch(err => console.error(err));
 }
 
