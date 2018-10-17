@@ -27,15 +27,17 @@ function createStringEntry(doc){
     }))
     .then(() => {
       for (i = 0; i < textList.length; i++) {
-        words += "<span onClick=addWord(this)";
+        words += "<span onClick=addWord(this)>";
         console.log(textList[i]);
         console.log(uniqueWords);
         console.log(uniqueWords[textList[i]]);
         if (uniqueWords[textList[i]]) {
-          words += "class=\"highlight\"";
+          words += "<u>";
         }
-        words += ">";
         words += textList[i];
+        if (uniqueWords[textList[i]]) {
+          words += "</u>";
+        }
         words += "</span> ";
       }
       title = text.slice(0, 20);
