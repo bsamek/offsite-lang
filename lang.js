@@ -1,6 +1,8 @@
 client = stitch.Stitch.initializeDefaultAppClient('offsite-language-app-oubno');
 db = client.getServiceClient(stitch.RemoteMongoClient.factory, 'mongodb-atlas').db('lang');
 
+active_tab = null
+
 function displayOnLoad() {
   client.auth
     .loginWithCredential(new stitch.AnonymousCredential())
@@ -24,7 +26,6 @@ function prepareNewWordModal(word, translation){
 function splitString(str, uniqueWords){
   p = jQuery("<p></p>")
   words = str.split(' ')
-  console.log(uniqueWords)
   for (var i = 0; i < words.length; i++) {
     clean_word       = cleanWord(words[i])
     word_translation = ""
@@ -39,12 +40,9 @@ function splitString(str, uniqueWords){
     else{
       word = clean_word
     }
-    //translation='${word_translation}'  
-    //popover = `tabindex="0" title="Translate word" data-trigger="focus" data-placement="top" data-toggle="popover" data-content="<input type=text/>"`
-    //span.popover({ trigger: 'focus' })
 
     span    = jQuery(`<span data-toggle="modal" data-target="#newWordModal" onClick="prepareNewWordModal('${clean_word}', '${word_translation}')">${word} </span>`)
-    console.log(span)
+
     p.append(span)
   }
 
@@ -69,20 +67,24 @@ function displayStringEntry(doc){
       return uniqueWords
     })
     .then((uniqueWords) => {
-      console.log('unique', uniqueWords)
       cls   = "list-group-item list-group-item-action"
       id    = doc._id
       text  = doc.content
       title = text.slice(0, 20)
       textList = text.split(" ");
 
-      p     = splitString(text, uniqueWords)
-      //phtml = p.html()
+      rmbtn   = jQuery(`<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}')"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`)
+      p       = splitString(text, uniqueWords)
 
-  	  listentry  = `<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`
-      rmbtn      = `<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}')"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`
-      panelentry = jQuery(`<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}</div>`)
+  	  listentry  = jQuery(`<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`)
+      panelentry = jQuery(`<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list"></div>`)
 
+      listentry.on('shown.bs.tab', function(e) {
+        console.log('event', e.target.id)
+        active_tab = e.target.id
+      })
+
+      panelentry.append(rmbtn)
       panelentry.append(p)
 
       $("#list-tab").append(listentry)
@@ -98,9 +100,19 @@ function displayStrings() {
   db.collection('strings')
     .find({}, { limit: 100 })
     .asArray()
-    .then(docs => docs.forEach(doc => displayStringEntry(doc)))
-    .then(() => {$('[data-toggle="popover"]').popover()})
+    .then(async function(docs){
+      for (var i = 0; i < docs.length; i++){
+        await displayStringEntry(docs[i])
+      }
+    })
+    .then(() => {
+      console.log('disp', active_tab, $('#' + active_tab))
+      if (active_tab){
+        $('#' + active_tab).tab('show')
+      }
+    })
     .catch(err => console.log(err));
+
 }
 
 function deleteString(id){
@@ -123,6 +135,7 @@ function addWord() {
   word = $('#new_word_orig').val()
   db.collection("words")
     .updateOne({from: word}, {from: word, to: translation}, {upsert: true})
+    .then(() => displayStrings())
     .catch(err => console.error(err));
 }
 
@@ -131,6 +144,7 @@ function deleteWord() {
   word = $('#new_word_orig').val()
   db.collection("words")
     .deleteOne({from: word})
+    .then(() => displayStrings())
     .catch(err => console.error(err));
 }
 
