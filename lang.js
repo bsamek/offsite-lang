@@ -18,13 +18,9 @@ function splitString(str, uniqueWords){
     clean_word       = word.replace(regex, '')
     word_translation = ""
 
-    for (var j = 0; j < uniqueWords.length; j++) {
-      console.log(  uniqueWords[j])
-      if (uniqueWords[j].from == word) {
-        word = "<u>" + word + "</u>";
-        word_translation = uniqueWords[j].to
-        break;
-      }
+    if (uniqueWords.hasOwnProperty(word)) {
+      word = "<u>" + word + "</u>";
+      word_translation = uniqueWords[word]
     }
 
     span = `<span word='${clean_word}' translation='${word_translation}' onClick=addWord(this)>${word} </span>`
@@ -38,19 +34,22 @@ function splitString(str, uniqueWords){
 
 function displayStringEntry(doc){
 
-  uniqueWords = {};
   db.collection('words')
     .find({from: {$in: doc.content.split(" ")}})
     .asArray()
     .then(res => {
+      uniqueWords = {};
       for (var i = 0; i < res.length; i++){
         var strdoc = res[i]
-        if (strdoc.to) {
+        if (strdoc.from) {
           uniqueWords[strdoc.from] = strdoc.to;
         }
       }
+      console.log('u1', uniqueWords)
+      return uniqueWords
     })
-    .then(() => {
+    .then((uniqueWords) => {
+      console.log('unique', uniqueWords)
       cls   = "list-group-item list-group-item-action"
       id    = doc._id
       text  = doc.content
