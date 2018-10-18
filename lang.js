@@ -2,6 +2,7 @@ client = stitch.Stitch.initializeDefaultAppClient('offsite-language-app-oubno');
 db = client.getServiceClient(stitch.RemoteMongoClient.factory, 'mongodb-atlas').db('lang');
 
 active_tab = null
+string_id_list = {}
 
 function displayOnLoad() {
   client.auth
@@ -76,6 +77,8 @@ function displayStringEntry(doc){
       rmbtn   = jQuery(`<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}')"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`)
       p       = splitString(text, uniqueWords)
 
+      string_id_list[`${id}`] = id
+
   	  listentry  = jQuery(`<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`)
       panelentry = jQuery(`<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list"></div>`)
 
@@ -117,7 +120,8 @@ function displayStrings() {
 
 function deleteString(id){
   db.collection("strings")
-    .deleteOne({_id: ObjectID(id)})
+    .deleteOne({_id: string_id_list[id]})
+    .then(() => delete string_id_list[id])
     .then(() => displayStrings())
     .catch(err => console.error(err));
 }
