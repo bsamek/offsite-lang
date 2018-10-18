@@ -15,14 +15,48 @@
   <script src="lang.js"></script>
 
   <title>Language Learning Tool</title>
+
+  <style>
+    body {
+      background-color: linen;
+    }
+
+    .word-translated {
+      background-color:lightcoral;
+      border: solid black thin;
+      padding-left:   2px;
+      padding-right:  2px;
+    }
+
+    .word-meaning {
+      background-color:lightskyblue;
+      border-top:    solid black thin;
+      border-bottom: solid black thin;
+      border-right:  solid black thin;
+      padding-left:   5px;
+      padding-right:  5px;
+      font-size:      8pt;
+    }
+
+    .word-hover:hover { 
+      background-color: lightcoral;
+      cursor: pointer;
+    }
+      
+  </style>
+      
 </head>
 
 <body onLoad="displayOnLoad()">
-  <!-- Button trigger modal -->
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newStringModal">
-    Add new text
-  </button>
-  
+  <!-- Nav bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark ml-auto">
+    <a class="navbar-brand" href="#">Language Tool</a>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-sm btn-light" data-toggle="modal" data-target="#newStringModal">Add new text</button>
+      <button type="button" class="btn btn-sm btn-light" id="toggleVisibilityBtn" onclick="toggleTranslation()">Show translations</button>
+    </div>
+  </nav>
+
   <!-- Modal for new string -->
   <div class="modal fade" id="newStringModal" tabindex="-1" role="dialog" aria-labelledby="newStringModalLbl" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -49,7 +83,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="newWordModalLbl"></h5>
+          <h5 class="modal-title" id="newWordModalLbl">lkj</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

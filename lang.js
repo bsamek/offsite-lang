@@ -12,13 +12,25 @@ function displayOnLoad() {
 }
 
 function cleanWord(word){
-  regex            = /[\!\@\#\$\%\^\&\*\(\)_\+\\\-\=\{\}\|\[\]\:"\;'\<\>\?\,\.\/「」„“]/g;
+  regex            = /[\!\@\#\$\%\^\&\*\(\)_\+\\\-\=\{\}\|\[\]\:"\;'\<\>\?\,\.\/\u201e\u201c]/g;
   clean_word       = word.replace(regex, '')
 
   return clean_word
 }
 
+function toggleTranslation(){
+  $('.word-meaning').toggle()
+  console.log($('#toggleVisibilityBt').html())
+  if ($('#toggleVisibilityBtn').text() == "Hide translations"){
+    $('#toggleVisibilityBtn').text("Show translations")
+  }
+  else{
+    $('#toggleVisibilityBtn').text("Hide translations")
+  }
+}
+
 function prepareNewWordModal(word, translation){
+  console.log('prep', word, translation)
   $('#newWordModalLbl').html("Translation for '<b>"+word+"</b>'")
   $('#new_word').val(translation)
   $('#new_word_orig').val(word)
@@ -28,23 +40,29 @@ function splitString(str, uniqueWords){
   p = jQuery("<p></p>")
   words = str.split(' ')
   for (var i = 0; i < words.length; i++) {
-    clean_word       = cleanWord(words[i])
+    word             = words[i]
+    clean_word       = cleanWord(word)
     word_translation = ""
-    word             = ""
+    cls              = "word-hover"
 
     if (uniqueWords.hasOwnProperty(clean_word)) {
-      word = "<u>" + clean_word + "</u>";
+      cls += " word-translated"
       if (uniqueWords[clean_word]){
         word_translation = uniqueWords[clean_word]
       }
     }
-    else{
-      word = clean_word
-    }
 
-    span    = jQuery(`<span data-toggle="modal" data-target="#newWordModal" onClick="prepareNewWordModal('${clean_word}', '${word_translation}')">${word} </span>`)
+    span    = jQuery(`<span data-toggle="modal" class="${cls}" data-target="#newWordModal"" onClick="prepareNewWordModal('${clean_word}', '${word_translation}' )">${word}</span>`)
 
     p.append(span)
+
+    if (word_translation){
+      transspan = jQuery(`<span class="word-meaning">${word_translation}</span>`)
+      transspan.hide()
+      p.append(transspan)
+    }
+
+    p.append(" ")
   }
 
   console.log(p)
@@ -68,7 +86,6 @@ function displayStringEntry(doc){
       return uniqueWords
     })
     .then((uniqueWords) => {
-      cls   = "list-group-item list-group-item-action"
       id    = doc._id
       text  = doc.content
       title = text.slice(0, 20)
@@ -79,7 +96,7 @@ function displayStringEntry(doc){
 
       string_id_list[`${id}`] = id
 
-  	  listentry  = jQuery(`<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`)
+  	  listentry  = jQuery(`<a class="list-group-item list-group-item-action" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`)
       panelentry = jQuery(`<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list"></div>`)
 
       listentry.on('shown.bs.tab', function(e) {
