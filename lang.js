@@ -18,6 +18,27 @@ function cleanWord(word){
   return clean_word
 }
 
+function loadFlashCards(){
+  return db.collection('words')
+  .find({})
+  .asArray()
+  .then(res => {
+    for (var i = 0; i < res.length; i++){
+      cardfront = jQuery(`<div class="carousel-item active">${res[i].from}</div>`)
+      cardback  = jQuery(`<div class="carousel-item active">${res[i].to}</div>`)
+
+      if (i == 0){
+        cardfront.addClass("active")
+      }
+    
+      $('#fc-carousel-div').append(cardfront)
+      $('#fc-carousel-div').append(cardback)
+    }
+  })
+  .catch(err => console.log(err));
+
+}
+
 function toggleTranslation(){
   $('.word-meaning').toggle()
   console.log($('#toggleVisibilityBt').html())
@@ -103,6 +124,12 @@ function displayStringEntry(doc){
         console.log('event', e.target.id)
         active_tab = e.target.id
       })
+
+      if (!active_tab){
+        active_tab = listentry.attr('id')
+      }
+
+      console.log('tab', active_tab)
 
       panelentry.append(rmbtn)
       panelentry.append(p)

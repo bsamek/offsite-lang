@@ -54,6 +54,7 @@
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-sm btn-light" data-toggle="modal" data-target="#newStringModal">Add new text</button>
       <button type="button" class="btn btn-sm btn-light" id="toggleVisibilityBtn" onclick="toggleTranslation()">Show translations</button>
+      <button type="button" class="btn btn-sm btn-light" data-toggle="modal" data-target="#flashCardsModal">Study flashcards</button>
     </div>
   </nav>
 
@@ -79,7 +80,7 @@
   </div>
 
   <!-- modal for new word -->
-  <div class="modal fade" id="newWordModal" tabindex="-1" role="dialog" aria-labelledby="newWordModalLbl" aria-hidden="true">
+  <div class="modal fade" id="newWordModal" tabindex="-1" role="dialog" labelledby="newWordModalLbl" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -101,6 +102,25 @@
     </div>
   </div>
 
+  <!-- modal for flashcards -->
+  <div class="modal fade" id="flashCardsModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   <div class="row">
     <div class="col-2">
       <div class="list-group" id="list-tab" role="tablist"></div>
@@ -109,6 +129,7 @@
       <div class="tab-content" id="nav-tabContent"></div>
     </div>
   </div>
+
 
   <div id="strings"></div>
 </body>
