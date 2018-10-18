@@ -19,16 +19,16 @@
 
 <body onLoad="displayOnLoad()">
   <!-- Button trigger modal -->
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newStringModal">
     Add new text
   </button>
   
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <!-- Modal for new string -->
+  <div class="modal fade" id="newStringModal" tabindex="-1" role="dialog" aria-labelledby="newStringModalLbl" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Add new text in foreign language</h5>
+          <h5 class="modal-title" id="newStringModalLbl">Add new text in foreign language</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -38,7 +38,30 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="addString()">Save changes</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="addString()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal for new word -->
+  <div class="modal fade" id="newWordModal" tabindex="-1" role="dialog" aria-labelledby="newWordModalLbl" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newWordModalLbl"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="new_word"/>
+          <input type="hidden" id="new_word_orig"/>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal" onClick="deleteWord()">Delete</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="addWord()">Save</button>
         </div>
       </div>
     </div>

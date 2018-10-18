@@ -8,22 +8,42 @@ function displayOnLoad() {
     .catch(console.error);
 }
 
+function cleanWord(word){
+  regex            = /[\!\@\#\$\%\^\&\*\(\)_\+\\\-\=\{\}\|\[\]\:"\;'\<\>\?\,\.\/「」„“]/g;
+  clean_word       = word.replace(regex, '')
+
+  return clean_word
+}
+
+function prepareNewWordModal(word, translation){
+  $('#newWordModalLbl').html("Translation for '<b>"+word+"</b>'")
+  $('#new_word').val(translation)
+  $('#new_word_orig').val(word)
+}
+
 function splitString(str, uniqueWords){
   p = jQuery("<p></p>")
   words = str.split(' ')
   console.log(uniqueWords)
   for (var i = 0; i < words.length; i++) {
-    word             = words[i]
-    regex            = /[\!\@\#\$\%\^\&\*\(\)_\+\\\-\=\{\}\|\[\]\:"\;'\<\>\?\,\.\/「」„“]/g;
-    clean_word       = word.replace(regex, '')
+    clean_word       = cleanWord(words[i])
     word_translation = ""
+    word             = ""
 
-    if (uniqueWords.hasOwnProperty(word)) {
-      word = "<u>" + word + "</u>";
-      word_translation = uniqueWords[word]
+    if (uniqueWords.hasOwnProperty(clean_word)) {
+      word = "<u>" + clean_word + "</u>";
+      if (uniqueWords[clean_word]){
+        word_translation = uniqueWords[clean_word]
+      }
     }
+    else{
+      word = clean_word
+    }
+    //translation='${word_translation}'  
+    //popover = `tabindex="0" title="Translate word" data-trigger="focus" data-placement="top" data-toggle="popover" data-content="<input type=text/>"`
+    //span.popover({ trigger: 'focus' })
 
-    span = `<span word='${clean_word}' translation='${word_translation}' onClick=addWord(this)>${word} </span>`
+    span    = jQuery(`<span data-toggle="modal" data-target="#newWordModal" onClick="prepareNewWordModal('${clean_word}', '${word_translation}')">${word} </span>`)
     console.log(span)
     p.append(span)
   }
@@ -34,7 +54,7 @@ function splitString(str, uniqueWords){
 
 function displayStringEntry(doc){
 
-  db.collection('words')
+  return db.collection('words')
     .find({from: {$in: doc.content.split(" ")}})
     .asArray()
     .then(res => {
@@ -57,11 +77,13 @@ function displayStringEntry(doc){
       textList = text.split(" ");
 
       p     = splitString(text, uniqueWords)
-      phtml = p.html()
+      //phtml = p.html()
 
   	  listentry  = `<a class="${cls}" id="list-${id}-list" data-toggle="list" href="#list-${id}" role="tab" aria-controls="${id}">${title}</a>`
       rmbtn      = `<div><button type="button" class="btn btn-default btn-sm" onClick="deleteString('${id}')"><i class="fa fa-trash" aria-hidden="true"></i></button></div>`
-      panelentry = `<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}${phtml}</div>`
+      panelentry = jQuery(`<div class="tab-pane fade" id="list-${id}" role="tabpanel" aria-labelledby="list-${id}-list">${rmbtn}</div>`)
+
+      panelentry.append(p)
 
       $("#list-tab").append(listentry)
       $("#nav-tabContent").append(panelentry)
@@ -77,6 +99,7 @@ function displayStrings() {
     .find({}, { limit: 100 })
     .asArray()
     .then(docs => docs.forEach(doc => displayStringEntry(doc)))
+    .then(() => {$('[data-toggle="popover"]').popover()})
     .catch(err => console.log(err));
 }
 
@@ -95,26 +118,20 @@ function addString() {
     .catch(err => console.error(err));
 }
 
-function addWord(word) {
-  var from = word.textContent;
-  var definition = window.prompt("Enter definition for \"\"");
+function addWord() {
+  translation = $('#new_word').val()
+  word = $('#new_word_orig').val()
   db.collection("words")
-    .insertOne({from: from, to: definition})
+    .updateOne({from: word}, {from: word, to: translation}, {upsert: true})
     .catch(err => console.error(err));
 }
 
-function getWordToSave() {
-  textbox = document.getElementById('paragraph')
-  trinput = document.getElementById('selectionTranslation')
-  t = textbox.value.substr(textbox.selectionStart, textbox.selectionEnd - textbox.selectionStart);
-  console.log(t, trinput.value)
-  word = {
-    'from': t,
-    'to': trinput.value,
-    'from_lang': 'en',
-    'to_lang': 'de'
-  }
-  addWord(word)
+function deleteWord() {
+  translation = $('#new_word').val()
+  word = $('#new_word_orig').val()
+  db.collection("words")
+    .deleteOne({from: word})
+    .catch(err => console.error(err));
 }
 
 //console.log("Test1", splitString("This is a simple test"))
